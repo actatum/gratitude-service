@@ -4,8 +4,8 @@
 version: 2.1
 
 orbs:
-  gcp-ecr: circleci/gcp-gcr@0.7.1
-  aws-ecs: circleci/aws-ecs@1.1.0
+  gcp-gcr: circleci/gcp-gcr@0.7.1
+  cloudrun: circleci/gcp-cloud-run@1.0.2
 
 jobs:
   test:
@@ -41,30 +41,35 @@ jobs:
     steps:
       - checkout
       - gcp-gcr/gcr-auth:
-          - gcloud-service-key: GCP_KEY
-          - google-project-id: PROJECT_ID
-          - google-compute-zone: GCP_ZONE
+          gcloud-service-key: GCP_KEY
+          google-project-id: PROJECT_ID
+          google-compute-zone: GCP_ZONE
       - gcp-gcr/build-image:
           google-project-id: PROJECT_ID
           image: $SERVICE_NAME
           registry-url: "gcr.io"
       - gcp-gcr/push-image:
+          google-project-id: PROJECT_ID
           image: $SERVICE_NAME
-          registry-url: gcr.io
+          registry-url: "gcr.io"
   deploy:
     machine: true
     steps:
       - checkout
+      - gcp-gcr/gcr-auth:
+          gcloud-service-key: GCP_KEY
+          google-project-id: PROJECT_ID
+          google-compute-zone: GCP_ZONE
       - cloudrun/deploy:
           platform: "managed"
           image: "gcr.io/$PROJECT_ID/$SERVICE_NAME"
-          service-name: "orb-gcp-cloud-run"
+          service-name: $SERVICE_NAME
           region: $GCP_ZONE
           unauthenticated: true
 
 workflows:
   version: 2
-  test-build-and-push:
+  test-build-push-deploy:
     jobs:
       - test
       - build-and-push:
@@ -77,5 +82,5 @@ workflows:
           requires:
             - build-and-push
           filters:
-            branches:
-              only: master
+           branches:
+             only: master
