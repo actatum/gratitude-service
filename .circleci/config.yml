@@ -49,6 +49,7 @@ jobs:
           image: $SERVICE_NAME
           registry-url: "gcr.io"
       - gcp-gcr/push-image:
+          google-project-id: PROJECT_ID
           image: $SERVICE_NAME
           registry-url: "gcr.io"
   deploy:
