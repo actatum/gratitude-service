@@ -67,12 +67,12 @@ workflows:
       - build-and-push:
           requires:
             - test
-          filters:
-            branches:
-              only: master
+          #filters:
+          #  branches:
+          #    only: master
       - deploy:
           requires:
             - build-and-push
-          filters:
-            branches:
-              only: master
+          #filters:
+          # branches:
+          #   only: master
