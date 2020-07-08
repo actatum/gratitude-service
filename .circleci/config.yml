@@ -63,13 +63,13 @@ jobs:
       - cloudrun/deploy:
           platform: "managed"
           image: "gcr.io/$PROJECT_ID/$SERVICE_NAME"
-          service-name: "orb-gcp-cloud-run"
+          service-name: $SERVICE_NAME
           region: $GCP_ZONE
           unauthenticated: true
 
 workflows:
   version: 2
-  test-build-and-push:
+  test-build-push-deploy:
     jobs:
       - test
       - build-and-push:
