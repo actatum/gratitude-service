@@ -1,0 +1,1 @@
+protoc --proto_path=pkg/api/proto --go_out=plugins=grpc:pkg/service service.proto
