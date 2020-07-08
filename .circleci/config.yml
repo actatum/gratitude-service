@@ -40,7 +40,10 @@ jobs:
     machine: true
     steps:
       - checkout
-      - gcp-gcr/gcr-auth
+      - gcp-gcr/gcr-auth:
+          - gcloud-service-key: GCP_KEY
+          - google-project-id: PROJECT_ID
+          - google-compute-zone: GCP_ZONE
       - gcp-gcr/build-image:
           google-project-id: PROJECT_ID
           image: $SERVICE_NAME
