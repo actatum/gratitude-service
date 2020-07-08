@@ -50,7 +50,7 @@ jobs:
           registry-url: "gcr.io"
       - gcp-gcr/push-image:
           image: $SERVICE_NAME
-          registry-url: gcr.io
+          registry-url: "gcr.io"
   deploy:
     machine: true
     steps:
