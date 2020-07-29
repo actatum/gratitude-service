@@ -2,12 +2,13 @@ package firestore
 
 import (
 	"context"
+	"net/http"
 	"os"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	gratitude "github.com/actatum/gratitude-board-service/pkg/service"
+	"github.com/actatum/gratitude-board-service/pkg/gratitude"
 	errs "github.com/pkg/errors"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -28,12 +29,12 @@ func newFirestoreClient() (*firestore.Client, error) {
 	conf := &firebase.Config{ProjectID: projectID}
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
-		return nil, errs.Wrap(err, "repository.Firestore.newFirestoreClient")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.newFirestoreClient")
 	}
 
 	client, err := app.Firestore(ctx)
 	if err != nil {
-		return nil, errs.Wrap(err, "repository.Firestore.newFirestoreClient")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.newFirestoreClient")
 	}
 
 	return client, nil
@@ -45,7 +46,7 @@ func NewFirestoreRepository() (gratitude.Repository, error) {
 	repo := &repository{}
 	client, err := newFirestoreClient()
 	if err != nil {
-		return nil, errs.Wrap(err, "repository.Firestore.NewFirestoreRepository")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.NewFirestoreRepository")
 	}
 
 	repo.client = client
@@ -53,8 +54,8 @@ func NewFirestoreRepository() (gratitude.Repository, error) {
 	return repo, nil
 }
 
-func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*gratitude.MessageResponse, error) {
-	var res gratitude.MessageResponse
+func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*gratitude.SendResponse, error) {
+	var res gratitude.SendResponse
 	jwt := ctx.Value("token").(*auth.Token)
 
 	// Add to senders outbox
@@ -64,20 +65,20 @@ func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*
 	}
 
 	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientIds {
+	for _, recipientID := range req.RecipientIDs {
 		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.SendPublic")
 		}
 	}
 
-	res.MessageId = ref.ID
+	res.ID = ref.ID
 
 	return &res, nil
 }
 
-func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*gratitude.MessageResponse, error) {
-	var res gratitude.MessageResponse
+func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*gratitude.SendResponse, error) {
+	var res gratitude.SendResponse
 	jwt := ctx.Value("token").(*auth.Token)
 
 	// Add to senders outbox
@@ -87,7 +88,7 @@ func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*g
 	}
 
 	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientIds {
+	for _, recipientID := range req.RecipientIDs {
 		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.SendPublic")
@@ -100,7 +101,7 @@ func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*g
 		return nil, errs.Wrap(err, "repository.Firestore.SendPublic")
 	}
 
-	res.MessageId = ref.ID
+	res.ID = ref.ID
 
 	return &res, nil
 }
@@ -117,11 +118,11 @@ func (r *repository) GetAllPublic(ctx context.Context, req *gratitude.GetAllPubl
 		if err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllPublic")
 		}
-		msg := &gratitude.Message{}
+		msg := gratitude.Message{}
 		if err := doc.DataTo(msg); err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllPublic")
 		}
-		msg.MessageId = doc.Ref.ID
+		msg.ID = doc.Ref.ID
 		res.Messages = append(res.Messages, msg)
 	}
 
@@ -142,11 +143,11 @@ func (r *repository) GetAllInbox(ctx context.Context, req *gratitude.GetAllInbox
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllInbox")
 		}
 
-		msg := &gratitude.Message{}
+		msg := gratitude.Message{}
 		if err := doc.DataTo(msg); err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllInbox")
 		}
-		msg.MessageId = doc.Ref.ID
+		msg.ID = doc.Ref.ID
 		res.Messages = append(res.Messages, msg)
 	}
 
@@ -167,11 +168,11 @@ func (r *repository) GetAllOutbox(ctx context.Context, req *gratitude.GetAllOutb
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllInbox")
 		}
 
-		msg := &gratitude.Message{}
+		msg := gratitude.Message{}
 		if err := doc.DataTo(msg); err != nil {
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllInbox")
 		}
-		msg.MessageId = doc.Ref.ID
+		msg.ID = doc.Ref.ID
 		res.Messages = append(res.Messages, msg)
 	}
 

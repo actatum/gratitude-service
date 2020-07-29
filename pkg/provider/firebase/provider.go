@@ -2,11 +2,12 @@ package firebase
 
 import (
 	"context"
+	"net/http"
 	"os"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	gratitude "github.com/actatum/gratitude-board-service/pkg/service"
+	"github.com/actatum/gratitude-board-service/pkg/gratitude"
 	errs "github.com/pkg/errors"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -27,12 +28,12 @@ func newFirebaseAuthClient() (*auth.Client, error) {
 	conf := &firebase.Config{ProjectID: projectID}
 	app, err := firebase.NewApp(ctx, conf, opt)
 	if err != nil {
-		return nil, errs.Wrap(err, "provider.Firebase.newFirebaseAuthClient")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "provider.Firebase.newFirebaseAuthClient")
 	}
 
 	client, err := app.Auth(ctx)
 	if err != nil {
-		return nil, errs.Wrap(err, "provider.Firebase.newFirebaseAuthClient")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "provider.Firebase.newFirebaseAuthClient")
 	}
 
 	return client, nil
@@ -43,7 +44,7 @@ func NewFirebaseProvider() (gratitude.Provider, error) {
 	provider := &provider{}
 	client, err := newFirebaseAuthClient()
 	if err != nil {
-		return nil, errs.Wrap(err, "repository.Firebase.NewFirebaseProvider")
+		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firebase.NewFirebaseProvider")
 	}
 
 	provider.client = client
@@ -60,10 +61,10 @@ func (p *provider) GetAllUsers(ctx context.Context, req *gratitude.GetAllUsersRe
 			break
 		}
 		if err != nil {
-			return nil, errs.Wrap(err, "provider.Firebase.GetAllUsers")
+			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "provider.Firebase.GetAllUsers")
 		}
-		u := &gratitude.User{
-			Uid:      user.UID,
+		u := gratitude.User{
+			UID:      user.UID,
 			Name:     user.DisplayName,
 			Email:    user.Email,
 			ImageUrl: user.PhotoURL,

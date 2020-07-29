@@ -1,13 +1,14 @@
-package http
+package api
 
 import (
-	"github.com/actatum/gratitude-board-service/pkg/provider/firebase"
-	"github.com/actatum/gratitude-board-service/pkg/repository/firestore"
-	gratitude "github.com/actatum/gratitude-board-service/pkg/service"
-	errs "github.com/pkg/errors"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/actatum/gratitude-board-service/pkg/gratitude"
+	"github.com/actatum/gratitude-board-service/pkg/provider/firebase"
+	"github.com/actatum/gratitude-board-service/pkg/repository/firestore"
+	errs "github.com/pkg/errors"
 )
 
 // Run starts the http server
@@ -23,9 +24,6 @@ func Run() error {
 	service := gratitude.NewGratitudeService(provider, repo)
 	server := NewServer(service)
 	r := routes(server)
-	if err := walk(r); err != nil {
-		return errs.Wrap(err, "api.http.Run")
-	}
 
 	port := os.Getenv("PORT")
 	log.Println("serving application at port :" + port)

@@ -11,19 +11,15 @@ type service struct {
 	repo     Repository
 }
 
-// NewGratitudeService returns an object implementing the GratitudeServiceServer interface
-func NewGratitudeService(provider Provider, repository Repository) GratitudeServiceServer {
+// NewGratitudeService returns an object implementing the GratitudeService interface
+func NewGratitudeService(provider Provider, repository Repository) GratitudeService {
 	return &service{
 		provider: provider,
 		repo:     repository,
 	}
 }
 
-func (s *service) SendPrivate(ctx context.Context, req *Message) (*MessageResponse, error) {
-	if err := validateMessage(req); err != nil {
-		return nil, errs.Wrap(err, "service.Gratitude.SendPrivate")
-	}
-
+func (s *service) SendPrivate(ctx context.Context, req *Message) (*SendResponse, error) {
 	res, err := s.repo.SendPrivate(ctx, req)
 	if err != nil {
 		return nil, errs.Wrap(err, "service.Gratitude.SendPrivate")
@@ -32,11 +28,7 @@ func (s *service) SendPrivate(ctx context.Context, req *Message) (*MessageRespon
 	return res, nil
 }
 
-func (s *service) SendPublic(ctx context.Context, req *Message) (*MessageResponse, error) {
-	if err := validateMessage(req); err != nil {
-		return nil, errs.Wrap(err, "service.Gratitude.SendPublic")
-	}
-
+func (s *service) SendPublic(ctx context.Context, req *Message) (*SendResponse, error) {
 	res, err := s.repo.SendPublic(ctx, req)
 	if err != nil {
 		return nil, errs.Wrap(err, "service.Gratitude.SendPublic")

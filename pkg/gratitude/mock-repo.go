@@ -10,16 +10,16 @@ type mockRepo struct {
 	mock.Mock
 }
 
-func (m *mockRepo) SendPrivate(ctx context.Context, req *Message) (*MessageResponse, error) {
+func (m *mockRepo) SendPrivate(ctx context.Context, req *Message) (*SendResponse, error) {
 	args := m.Called()
 	result := args.Get(0)
-	return result.(*MessageResponse), args.Error(1)
+	return result.(*SendResponse), args.Error(1)
 }
 
-func (m *mockRepo) SendPublic(ctx context.Context, req *Message) (*MessageResponse, error) {
+func (m *mockRepo) SendPublic(ctx context.Context, req *Message) (*SendResponse, error) {
 	args := m.Called()
 	result := args.Get(0)
-	return result.(*MessageResponse), args.Error(1)
+	return result.(*SendResponse), args.Error(1)
 }
 
 func (m *mockRepo) GetAllPublic(ctx context.Context, req *GetAllPublicRequest) (*GetAllPublicResponse, error) {

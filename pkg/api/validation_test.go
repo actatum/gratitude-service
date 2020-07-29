@@ -1,48 +1,49 @@
-package gratitude
+package api
 
 import (
 	"testing"
 
+	"github.com/actatum/gratitude-board-service/pkg/gratitude"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_validateMessage(t *testing.T) {
 	tt := []struct {
 		name    string
-		msg     *Message
+		msg     *gratitude.Message
 		wantErr bool
 		err     string
 	}{
-		{name: "no sender", msg: &Message{
+		{name: "no sender", msg: &gratitude.Message{
 			Sender: "",
 		}, wantErr: true, err: "invalid request: message sender is empty"},
-		{name: "no sender ID", msg: &Message{
+		{name: "no sender ID", msg: &gratitude.Message{
 			Sender:   "me",
-			SenderId: "",
+			SenderID: "",
 		}, wantErr: true, err: "invalid request: message sender ID is empty"},
-		{name: "no recipients", msg: &Message{
+		{name: "no recipients", msg: &gratitude.Message{
 			Sender:     "me",
-			SenderId:   "id",
+			SenderID:   "id",
 			Recipients: nil,
 		}, wantErr: true, err: "invalid request: message recipient is empty"},
-		{name: "no recipient IDs", msg: &Message{
+		{name: "no recipient IDs", msg: &gratitude.Message{
 			Sender:       "me",
-			SenderId:     "id",
+			SenderID:     "id",
 			Recipients:   []string{"you"},
-			RecipientIds: nil,
+			RecipientIDs: nil,
 		}, wantErr: true, err: "invalid request: message recipient ID is empty"},
-		{name: "no text", msg: &Message{
+		{name: "no text", msg: &gratitude.Message{
 			Sender:       "me",
-			SenderId:     "id",
+			SenderID:     "id",
 			Recipients:   []string{"you"},
-			RecipientIds: []string{"id"},
+			RecipientIDs: []string{"id"},
 			Text:         "",
 		}, wantErr: true, err: "invalid request: message text is empty"},
-		{name: "valid message", msg: &Message{
+		{name: "valid message", msg: &gratitude.Message{
 			Sender:       "me",
-			SenderId:     "id",
+			SenderID:     "id",
 			Recipients:   []string{"you"},
-			RecipientIds: []string{"id"},
+			RecipientIDs: []string{"id"},
 			Text:         "heres some text",
 		}, wantErr: false},
 	}
