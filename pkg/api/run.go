@@ -1,8 +1,6 @@
 package api
 
 import (
-	"log"
-	"net/http"
 	"os"
 
 	"github.com/actatum/gratitude-board-service/pkg/gratitude"
@@ -24,8 +22,6 @@ func Run() error {
 	service := gratitude.NewGratitudeService(provider, repo)
 	server := NewServer(service)
 	r := routes(server)
-
 	port := os.Getenv("PORT")
-	log.Println("serving application at port :" + port)
-	return http.ListenAndServe(":"+port, r)
+	return r.Run(":" + port)
 }

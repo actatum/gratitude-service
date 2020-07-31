@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/actatum/gratitude-board-service/pkg/api/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -8,14 +9,13 @@ import (
 )
 
 func routes(s Server) *gin.Engine {
-	r := gin.New()
-	r.Use(gin.Recovery())
+	r := gin.Default()
 	r.Use(corsOptions())
 	r.GET("/api/v1/health", s.HandleHealth)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("/api/v1")
-	v1.Use(gin.Logger())
+	v1.Use(middleware.Authenticator())
 	{
 		public := v1.Group("/public")
 		{
@@ -49,9 +49,10 @@ func routes(s Server) *gin.Engine {
 
 func corsOptions() gin.HandlerFunc {
 	opts := cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000", "*"},
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"ACCEPT", "Authorization", "Content-Type", "Origin"},
+		AllowOrigins:  []string{"http://localhost:3000", "*"},
+		AllowMethods:  []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:  []string{"ACCEPT", "Authorization", "Content-Type", "Origin"},
+		ExposeHeaders: []string{"Content-Length"},
 	})
 
 	return opts

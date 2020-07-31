@@ -23,7 +23,7 @@ type provider struct {
 
 func newFirebaseAuthClient() (*auth.Client, error) {
 	ctx := context.Background()
-	creds := os.Getenv("GCP")
+	creds := os.Getenv("GCP_KEY")
 	opt := option.WithCredentialsJSON([]byte(creds))
 	conf := &firebase.Config{ProjectID: projectID}
 	app, err := firebase.NewApp(ctx, conf, opt)
