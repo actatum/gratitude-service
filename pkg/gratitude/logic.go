@@ -11,8 +11,8 @@ type service struct {
 	repo     Repository
 }
 
-// NewGratitudeService returns an object implementing the GratitudeService interface
-func NewGratitudeService(provider Provider, repository Repository) GratitudeService {
+// NewGratitudeService returns an object implementing the Service interface
+func NewGratitudeService(provider Provider, repository Repository) Service {
 	return &service{
 		provider: provider,
 		repo:     repository,

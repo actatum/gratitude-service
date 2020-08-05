@@ -16,7 +16,7 @@ func validateMessage(msg *gratitude.Message) error {
 	if msg.Recipients == nil {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message recipient is empty")
 	}
-	if msg.RecipientIDs == nil {
+	if msg.RecipientsIDs == nil {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message recipient ID is empty")
 	}
 	if msg.Text == "" {

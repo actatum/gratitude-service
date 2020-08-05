@@ -68,7 +68,7 @@ func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*
 	}
 
 	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientIDs {
+	for _, recipientID := range req.RecipientsIDs {
 		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPublic")
@@ -94,7 +94,7 @@ func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*g
 	}
 
 	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientIDs {
+	for _, recipientID := range req.RecipientsIDs {
 		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPublic")

@@ -67,7 +67,7 @@ func (p *provider) GetAllUsers(ctx context.Context, req *gratitude.GetAllUsersRe
 			UID:      user.UID,
 			Name:     user.DisplayName,
 			Email:    user.Email,
-			ImageUrl: user.PhotoURL,
+			ImageURL: user.PhotoURL,
 		}
 		res.Users = append(res.Users, u)
 	}

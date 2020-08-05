@@ -2,7 +2,8 @@ package gratitude
 
 import "context"
 
-type GratitudeService interface {
+// Service is the interface for the service layer
+type Service interface {
 	SendPrivate(context.Context, *Message) (*SendResponse, error)
 	SendPublic(context.Context, *Message) (*SendResponse, error)
 	GetAllPublic(context.Context, *GetAllPublicRequest) (*GetAllPublicResponse, error)

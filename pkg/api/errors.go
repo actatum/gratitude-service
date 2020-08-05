@@ -13,8 +13,8 @@ type httpError struct {
 	Message string `json:"message"`
 }
 
-func handleHttpError(ctx *gin.Context, err error) {
-	var e *gratitude.GratitudeError
+func handleHTTPError(ctx *gin.Context, err error) {
+	var e *gratitude.Error
 	log.Println(err)
 	if errs.As(err, &e) {
 		ctx.JSON(e.Status(), &httpError{

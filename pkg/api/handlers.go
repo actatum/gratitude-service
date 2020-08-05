@@ -9,11 +9,11 @@ import (
 )
 
 type server struct {
-	service gratitude.GratitudeService
+	service gratitude.Service
 }
 
 // NewServer returns an implementation of the Server interface for handling http requests
-func NewServer(service gratitude.GratitudeService) Server {
+func NewServer(service gratitude.Service) Server {
 	return &server{
 		service: service,
 	}
@@ -34,18 +34,18 @@ func NewServer(service gratitude.GratitudeService) Server {
 func (s *server) HandleSendPrivate(ctx *gin.Context) {
 	var req gratitude.Message
 	if err := ctx.BindJSON(&req); err != nil {
-		handleHttpError(ctx, gratitude.NewGratitudeError(http.StatusBadRequest, err.Error()))
+		handleHTTPError(ctx, gratitude.NewGratitudeError(http.StatusBadRequest, err.Error()))
 		return
 	}
 
 	if err := validateMessage(&req); err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
 	res, err := s.service.SendPrivate(ctx, &req)
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
@@ -67,18 +67,18 @@ func (s *server) HandleSendPrivate(ctx *gin.Context) {
 func (s *server) HandleSendPublic(ctx *gin.Context) {
 	var req gratitude.Message
 	if err := ctx.BindJSON(&req); err != nil {
-		handleHttpError(ctx, gratitude.NewGratitudeError(http.StatusBadRequest, err.Error()))
+		handleHTTPError(ctx, gratitude.NewGratitudeError(http.StatusBadRequest, err.Error()))
 		return
 	}
 
 	if err := validateMessage(&req); err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
 	res, err := s.service.SendPublic(ctx, &req)
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (s *server) HandleSendPublic(ctx *gin.Context) {
 func (s *server) HandleGetPublic(ctx *gin.Context) {
 	res, err := s.service.GetAllPublic(ctx, &gratitude.GetAllPublicRequest{})
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
@@ -120,7 +120,7 @@ func (s *server) HandleGetPublic(ctx *gin.Context) {
 func (s *server) HandleGetInbox(ctx *gin.Context) {
 	res, err := s.service.GetAllInbox(ctx, &gratitude.GetAllInboxRequest{})
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
@@ -141,7 +141,7 @@ func (s *server) HandleGetInbox(ctx *gin.Context) {
 func (s *server) HandleGetOutbox(ctx *gin.Context) {
 	res, err := s.service.GetAllOutbox(ctx, &gratitude.GetAllOutboxRequest{})
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
@@ -151,7 +151,7 @@ func (s *server) HandleGetOutbox(ctx *gin.Context) {
 func (s *server) HandleGetUsers(ctx *gin.Context) {
 	res, err := s.service.GetAllUsers(ctx, &gratitude.GetAllUsersRequest{})
 	if err != nil {
-		handleHttpError(ctx, err)
+		handleHTTPError(ctx, err)
 		return
 	}
 
