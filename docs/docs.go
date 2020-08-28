@@ -51,13 +51,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -89,13 +89,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -127,13 +127,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -176,13 +176,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -214,13 +214,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -261,13 +261,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -275,17 +275,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "api.httpError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "gratitude.GetAllInboxResponse": {
             "type": "object",
             "properties": {
@@ -328,17 +317,20 @@ var doc = `{
                 "kind": {
                     "type": "string"
                 },
-                "recipientIDs": {
+                "receivers": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "recipients": {
+                "receivers_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "seen": {
+                    "type": "boolean"
                 },
                 "sender": {
                     "type": "string"
@@ -358,6 +350,17 @@ var doc = `{
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "transport.httpError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
                     "type": "string"
                 }
             }
@@ -386,7 +389,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/api/v1",
+	BasePath:    "/transport/v1",
 	Schemes:     []string{},
 	Title:       "Gratitude API",
 	Description: "API to handle CRUD operations for user/public messages.",

@@ -15,14 +15,22 @@ func TestSendPrivate(t *testing.T) {
 		expected *SendResponse
 	}{
 		{name: "send private", req: &Message{
-			Sender:        "me",
-			SenderID:      "id",
-			Recipients:    []string{"you"},
-			RecipientsIDs: []string{"id"},
-			Text:          "message",
-			SentAt:        time.Time{},
-			ID:            "1",
-			Kind:          "private",
+				Sender: User{
+					UID:      "y",
+					Name:     "y",
+					Email:    "y@y.y",
+					ImageURL: "",
+				},
+				Receivers: []User{{
+					UID:      "x",
+					Name:     "you",
+					Email:    "you@you.you",
+					ImageURL: "",
+				}},
+				Text:   "message",
+				SentAt: time.Time{},
+				ID:     "1",
+				Kind:   "private",
 		}, expected: &SendResponse{
 			ID: "1",
 		}},
@@ -52,14 +60,22 @@ func TestSendPublic(t *testing.T) {
 		expected *SendResponse
 	}{
 		{name: "send public", req: &Message{
-			Sender:        "me",
-			SenderID:      "id",
-			Recipients:    []string{"you"},
-			RecipientsIDs: []string{"id"},
-			Text:          "message",
-			SentAt:        time.Time{},
-			ID:            "1",
-			Kind:          "public",
+			Sender: User{
+				UID:      "y",
+				Name:     "y",
+				Email:    "y@y.y",
+				ImageURL: "",
+			},
+			Receivers: []User{{
+				UID:      "x",
+				Name:     "you",
+				Email:    "you@you.you",
+				ImageURL: "",
+			}},
+			Text:   "message",
+			SentAt: time.Time{},
+			ID:     "1",
+			Kind:   "private",
 		}, expected: &SendResponse{
 			ID: "1",
 		}},
@@ -90,13 +106,21 @@ func TestGetAllPublic(t *testing.T) {
 	}{
 		{name: "get all public", req: &GetAllPublicRequest{}, expected: &GetAllPublicResponse{
 			Messages: []Message{{
-				Sender:        "me",
-				SenderID:      "id",
-				Recipients:    []string{"you"},
-				RecipientsIDs: []string{"id"},
-				Text:          "message",
-				SentAt:        time.Time{},
-				ID:            "1",
+				Sender: User{
+					UID:      "y",
+					Name:     "y",
+					Email:    "y@y.y",
+					ImageURL: "",
+				},
+				Receivers: []User{{
+					UID:      "x",
+					Name:     "you",
+					Email:    "you@you.you",
+					ImageURL: "",
+				}},
+				Text:   "message",
+				SentAt: time.Time{},
+				ID:     "1",
 			}},
 		}},
 	}
@@ -114,9 +138,7 @@ func TestGetAllPublic(t *testing.T) {
 
 			// Data assertion
 			assert.Equal(t, tc.expected.Messages[0].Sender, res.Messages[0].Sender)
-			assert.Equal(t, tc.expected.Messages[0].SenderID, res.Messages[0].SenderID)
-			assert.Equal(t, tc.expected.Messages[0].Recipients, res.Messages[0].Recipients)
-			assert.Equal(t, tc.expected.Messages[0].RecipientsIDs, res.Messages[0].RecipientsIDs)
+			assert.Equal(t, tc.expected.Messages[0].Receivers, res.Messages[0].Receivers)
 			assert.Equal(t, tc.expected.Messages[0].Text, res.Messages[0].Text)
 			assert.Equal(t, tc.expected.Messages[0].ID, res.Messages[0].ID)
 		})
@@ -131,13 +153,21 @@ func TestGetAllInbox(t *testing.T) {
 	}{
 		{name: "get all inbox", req: &GetAllInboxRequest{}, expected: &GetAllInboxResponse{
 			Messages: []Message{{
-				Sender:        "me",
-				SenderID:      "id",
-				Recipients:    []string{"you"},
-				RecipientsIDs: []string{"id"},
-				Text:          "message",
-				SentAt:        time.Time{},
-				ID:            "1",
+				Sender: User{
+					UID:      "y",
+					Name:     "y",
+					Email:    "y@y.y",
+					ImageURL: "",
+				},
+				Receivers: []User{{
+					UID:      "x",
+					Name:     "you",
+					Email:    "you@you.you",
+					ImageURL: "",
+				}},
+				Text:   "message",
+				SentAt: time.Time{},
+				ID:     "1",
 			}},
 		}},
 	}
@@ -155,9 +185,7 @@ func TestGetAllInbox(t *testing.T) {
 
 			// Data assertion
 			assert.Equal(t, tc.expected.Messages[0].Sender, res.Messages[0].Sender)
-			assert.Equal(t, tc.expected.Messages[0].SenderID, res.Messages[0].SenderID)
-			assert.Equal(t, tc.expected.Messages[0].Recipients, res.Messages[0].Recipients)
-			assert.Equal(t, tc.expected.Messages[0].RecipientsIDs, res.Messages[0].RecipientsIDs)
+			assert.Equal(t, tc.expected.Messages[0].Receivers, res.Messages[0].Receivers)
 			assert.Equal(t, tc.expected.Messages[0].Text, res.Messages[0].Text)
 			assert.Equal(t, tc.expected.Messages[0].ID, res.Messages[0].ID)
 		})
@@ -172,13 +200,21 @@ func TestGetAllOutbox(t *testing.T) {
 	}{
 		{name: "get all outbox", req: &GetAllOutboxRequest{}, expected: &GetAllOutboxResponse{
 			Messages: []Message{{
-				Sender:        "me",
-				SenderID:      "id",
-				Recipients:    []string{"you"},
-				RecipientsIDs: []string{"id"},
-				Text:          "message",
-				SentAt:        time.Time{},
-				ID:            "1",
+				Sender: User{
+					UID:      "y",
+					Name:     "y",
+					Email:    "y@y.y",
+					ImageURL: "",
+				},
+				Receivers: []User{{
+					UID:      "x",
+					Name:     "you",
+					Email:    "you@you.you",
+					ImageURL: "",
+				}},
+				Text:   "message",
+				SentAt: time.Time{},
+				ID:     "1",
 			}},
 		}},
 	}
@@ -196,9 +232,7 @@ func TestGetAllOutbox(t *testing.T) {
 
 			// Data assertion
 			assert.Equal(t, tc.expected.Messages[0].Sender, res.Messages[0].Sender)
-			assert.Equal(t, tc.expected.Messages[0].SenderID, res.Messages[0].SenderID)
-			assert.Equal(t, tc.expected.Messages[0].Recipients, res.Messages[0].Recipients)
-			assert.Equal(t, tc.expected.Messages[0].RecipientsIDs, res.Messages[0].RecipientsIDs)
+			assert.Equal(t, tc.expected.Messages[0].Receivers, res.Messages[0].Receivers)
 			assert.Equal(t, tc.expected.Messages[0].Text, res.Messages[0].Text)
 			assert.Equal(t, tc.expected.Messages[0].ID, res.Messages[0].ID)
 		})

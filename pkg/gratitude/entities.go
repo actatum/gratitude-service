@@ -4,23 +4,21 @@ import "time"
 
 // User data model
 type User struct {
-	UID      string `json:"uid"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	ImageURL string `json:"image_url"`
+	UID      string `json:"uid" firestore:"uid"`
+	Name     string `json:"name" firestore:"name"`
+	Email    string `json:"email" firestore:"email"`
+	ImageURL string `json:"image_url" firestore:"image_url"`
 }
 
 // Message is a data model for a
 type Message struct {
-	ID            string    `json:"id"`
-	Kind          string    `json:"kind"`
-	SenderID      string    `json:"sender_id"`
-	Sender        string    `json:"sender"`
-	Recipients    []string  `json:"recipients"`
-	RecipientsIDs []string  `json:"recipients_ids`
-	Text          string    `json:"text"`
-	SentAt        time.Time `json:"sent_at"`
-	Seen          bool      `json:"seen"`
+	ID        string    `json:"id" firestore:"id"`
+	Kind      string    `json:"kind" firestore:"kind"`
+	Sender    User      `json:"sender" firestore:"sender"`
+	Receivers []User    `json:"receivers" firestore:"receivers"`
+	Text      string    `json:"text" firestore:"text"`
+	SentAt    time.Time `json:"sent_at" firestore:"sent_at"`
+	Seen      bool      `json:"seen" firestore:"seen"`
 }
 
 // SendResponse is a response model for sending public or private messages
@@ -29,7 +27,9 @@ type SendResponse struct {
 }
 
 // GetAllPublicRequest is a request model for retrieving all public messages
-type GetAllPublicRequest struct{}
+type GetAllPublicRequest struct {
+	UID string `json:"uid"`
+}
 
 // GetAllPublicResponse is a response model for retrieving all public messages
 type GetAllPublicResponse struct {
@@ -37,7 +37,9 @@ type GetAllPublicResponse struct {
 }
 
 // GetAllInboxRequest is a request model for retrieving all inbox messages
-type GetAllInboxRequest struct{}
+type GetAllInboxRequest struct {
+	UID string `json:"uid"`
+}
 
 // GetAllInboxResponse is a response model for retrieving all inbox messages
 type GetAllInboxResponse struct {
@@ -45,7 +47,9 @@ type GetAllInboxResponse struct {
 }
 
 // GetAllOutboxRequest is a request model for retrieving all outbox messages
-type GetAllOutboxRequest struct{}
+type GetAllOutboxRequest struct {
+	UID string `json:"uid"`
+}
 
 // GetAllOutboxResponse is a response model for retrieving all outbox messages
 type GetAllOutboxResponse struct {
@@ -53,7 +57,9 @@ type GetAllOutboxResponse struct {
 }
 
 // GetAllUsersRequest is a request model for retrieving all users on the platform
-type GetAllUsersRequest struct{}
+type GetAllUsersRequest struct {
+	UID string `json:"uid"`
+}
 
 // GetAllUsersResponse is a response model for retrieving all users on the platform
 type GetAllUsersResponse struct {

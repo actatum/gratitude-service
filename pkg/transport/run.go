@@ -1,6 +1,7 @@
-package api
+package transport
 
 import (
+	"github.com/actatum/gratitude-board-service/pkg/logger"
 	"os"
 
 	"github.com/actatum/gratitude-board-service/pkg/gratitude"
@@ -13,15 +14,26 @@ import (
 func Run() error {
 	provider, err := firebase.NewFirebaseProvider()
 	if err != nil {
-		return errs.Wrap(err, "api.http.Run")
+		return errs.Wrap(err, "transport.http.Run")
 	}
+
 	repo, err := firestore.NewFirestoreRepository()
 	if err != nil {
-		return errs.Wrap(err, "api.http.Run")
+		return errs.Wrap(err, "transport.http.Run")
 	}
+
 	service := gratitude.NewGratitudeService(provider, repo)
-	server := NewServer(service)
+
+	l, err := logger.NewZapLogger()
+	if err != nil {
+		return errs.Wrap(err, "transport.http.Run")
+	}
+
+	server := NewServer(service, l)
+
 	r := routes(server)
+
 	port := os.Getenv("PORT")
-	return r.Run(":" + port)
+
+	return r.Start(":" + port)
 }

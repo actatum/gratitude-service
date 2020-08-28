@@ -1,12 +1,5 @@
-basePath: /api/v1
+basePath: /transport/v1
 definitions:
-  api.httpError:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   gratitude.GetAllInboxResponse:
     properties:
       messages:
@@ -34,14 +27,16 @@ definitions:
         type: string
       kind:
         type: string
-      recipientIDs:
+      receivers:
         items:
           type: string
         type: array
-      recipients:
+      receivers_ids:
         items:
           type: string
         type: array
+      seen:
+        type: boolean
       sender:
         type: string
       sender_id:
@@ -54,6 +49,13 @@ definitions:
   gratitude.SendResponse:
     properties:
       id:
+        type: string
+    type: object
+  transport.httpError:
+    properties:
+      code:
+        type: integer
+      message:
         type: string
     type: object
 host: localhost:8080
@@ -80,11 +82,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Server health check
@@ -104,11 +106,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Retrieve a users inbox
@@ -128,11 +130,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Retrieve a users outbox
@@ -159,11 +161,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Send a user a private message
@@ -183,11 +185,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Retrieve all public messages
@@ -213,11 +215,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.httpError'
+            $ref: '#/definitions/transport.httpError'
       security:
       - BasicAuth: []
       summary: Send a public message

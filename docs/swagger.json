@@ -8,7 +8,7 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api/v1",
+    "basePath": "/transport/v1",
     "paths": {
         "/health": {
             "get": {
@@ -36,13 +36,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -74,13 +74,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -112,13 +112,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -161,13 +161,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -199,13 +199,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -246,13 +246,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.httpError"
+                            "$ref": "#/definitions/transport.httpError"
                         }
                     }
                 }
@@ -260,17 +260,6 @@
         }
     },
     "definitions": {
-        "api.httpError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "gratitude.GetAllInboxResponse": {
             "type": "object",
             "properties": {
@@ -313,17 +302,20 @@
                 "kind": {
                     "type": "string"
                 },
-                "recipientIDs": {
+                "receivers": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "recipients": {
+                "receivers_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "seen": {
+                    "type": "boolean"
                 },
                 "sender": {
                     "type": "string"
@@ -343,6 +335,17 @@
             "type": "object",
             "properties": {
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "transport.httpError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
                     "type": "string"
                 }
             }

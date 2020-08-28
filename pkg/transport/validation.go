@@ -1,4 +1,4 @@
-package api
+package transport
 
 import (
 	"net/http"
@@ -7,18 +7,18 @@ import (
 )
 
 func validateMessage(msg *gratitude.Message) error {
-	if msg.Sender == "" {
+	if msg.Sender.Email == "" {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message sender is empty")
 	}
-	if msg.SenderID == "" {
+
+	if msg.Sender.UID == "" {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message sender ID is empty")
 	}
-	if msg.Recipients == nil {
+
+	if msg.Receivers == nil {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message recipient is empty")
 	}
-	if msg.RecipientsIDs == nil {
-		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message recipient ID is empty")
-	}
+
 	if msg.Text == "" {
 		return gratitude.NewGratitudeError(http.StatusBadRequest, "invalid request: message text is empty")
 	}

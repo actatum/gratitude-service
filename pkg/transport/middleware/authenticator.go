@@ -3,13 +3,12 @@ package middleware
 import (
 	"context"
 	"errors"
-	"log"
+	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 )
 
@@ -17,33 +16,32 @@ import (
 // then calls to firebase to verify the jwt. If jwt is invalid it returns a http status 401 (unauthorized)
 // If the jwt is valid it pushes the firebase auth token object into the context at the key 'token' and pushes
 // the raw jwt string into the context at the key 'rawJWT'
-func Authenticator() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		authHeader, err := fromHeader(ctx)
-		if err != nil {
-			log.Println(err)
-			ctx.JSON(http.StatusUnauthorized, err.Error())
-			ctx.Abort()
-			return
-		}
+func Authenticator() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader, err := authFromHeader(c)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+			}
 
-		jwt, valid, err := verifyToken(authHeader)
-		if !valid {
-			log.Println(err)
-			ctx.JSON(http.StatusUnauthorized, err.Error())
-			ctx.Abort()
-			return
-		}
+			jwt, valid, err := verifyToken(authHeader)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+			}
+			if !valid {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+			}
 
-		ctx.Set("token", jwt)
-		ctx.Set("rawJWT", authHeader)
-		ctx.Next()
+			c.Set("token", jwt)
+			c.Set("rawJWT", authHeader)
+			return next(c)
+		}
 	}
 }
 
-// fromHeader retreives the 'Authorization' header from the gin context request header
-func fromHeader(ctx *gin.Context) (string, error) {
-	token := ctx.GetHeader("Authorization")
+// authFromHeader retreives the 'Authorization' header from the gin context request header
+func authFromHeader(c echo.Context) (string, error) {
+	token := c.Request().Header.Get(echo.HeaderAuthorization)
 	if token == "" {
 		return "", errors.New("missing or empty 'Authorization' header")
 	}

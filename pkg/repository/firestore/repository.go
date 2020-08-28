@@ -7,7 +7,6 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
-	"firebase.google.com/go/auth"
 	"github.com/actatum/gratitude-board-service/pkg/gratitude"
 	errs "github.com/pkg/errors"
 	"google.golang.org/api/iterator"
@@ -56,20 +55,16 @@ func NewFirestoreRepository() (gratitude.Repository, error) {
 
 func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*gratitude.SendResponse, error) {
 	var res gratitude.SendResponse
-	jwt, ok := ctx.Value("token").(*auth.Token)
-	if !ok {
-		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusUnauthorized, "ctx.Value('token') is not of type *auth.Token"), "repository.Firestore.SendPrivate")
-	}
 
 	// Add to senders outbox
-	ref, _, err := r.client.Collection("users").Doc(jwt.UID).Collection("outbox").Add(ctx, req)
+	ref, _, err := r.client.Collection("users").Doc(req.Sender.UID).Collection("outbox").Add(ctx, req)
 	if err != nil {
 		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPrivate")
 	}
 
-	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientsIDs {
-		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
+	// Add to all Receivers inbox
+	for _, receiver := range req.Receivers {
+		_, err = r.client.Collection("users").Doc(receiver.UID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPublic")
 		}
@@ -82,20 +77,16 @@ func (r *repository) SendPrivate(ctx context.Context, req *gratitude.Message) (*
 
 func (r *repository) SendPublic(ctx context.Context, req *gratitude.Message) (*gratitude.SendResponse, error) {
 	var res gratitude.SendResponse
-	jwt, ok := ctx.Value("token").(*auth.Token)
-	if !ok {
-		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusUnauthorized, "ctx.Value('token') is not of type *auth.Token"), "repository.Firestore.SendPublic")
-	}
 
 	// Add to senders outbox
-	ref, _, err := r.client.Collection("users").Doc(jwt.UID).Collection("outbox").Add(ctx, req)
+	ref, _, err := r.client.Collection("users").Doc(req.Sender.UID).Collection("outbox").Add(ctx, req)
 	if err != nil {
 		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPublic")
 	}
 
-	// Add to all recipients inbox
-	for _, recipientID := range req.RecipientsIDs {
-		_, err = r.client.Collection("users").Doc(recipientID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
+	// Add to all Receivers inbox
+	for _, receiver := range req.Receivers {
+		_, err = r.client.Collection("users").Doc(receiver.UID).Collection("inbox").Doc(ref.ID).Set(ctx, req)
 		if err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.SendPublic")
 		}
@@ -125,8 +116,8 @@ func (r *repository) GetAllPublic(ctx context.Context, req *gratitude.GetAllPubl
 			return nil, errs.Wrap(err, "repository.Firestore.GetAllPublic")
 		}
 		msg := gratitude.Message{}
-		if err := doc.DataTo(msg); err != nil {
-			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.GetAllPublic")
+		if err := doc.DataTo(&msg); err != nil {
+			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.GetAllPublic 1")
 		}
 		msg.ID = doc.Ref.ID
 		res.Messages = append(res.Messages, msg)
@@ -137,12 +128,8 @@ func (r *repository) GetAllPublic(ctx context.Context, req *gratitude.GetAllPubl
 
 func (r *repository) GetAllInbox(ctx context.Context, req *gratitude.GetAllInboxRequest) (*gratitude.GetAllInboxResponse, error) {
 	var res gratitude.GetAllInboxResponse
-	jwt, ok := ctx.Value("token").(*auth.Token)
-	if !ok {
-		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusUnauthorized, "ctx.Value('token') is not of type *auth.Token"), "repository.Firestore.GetAllInbox")
-	}
 
-	iter := r.client.Collection("users").Doc(jwt.UID).Collection("inbox").Documents(ctx)
+	iter := r.client.Collection("users").Doc(req.UID).Collection("inbox").Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -153,7 +140,7 @@ func (r *repository) GetAllInbox(ctx context.Context, req *gratitude.GetAllInbox
 		}
 
 		msg := gratitude.Message{}
-		if err := doc.DataTo(msg); err != nil {
+		if err := doc.DataTo(&msg); err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.GetAllInbox")
 		}
 		msg.ID = doc.Ref.ID
@@ -165,12 +152,8 @@ func (r *repository) GetAllInbox(ctx context.Context, req *gratitude.GetAllInbox
 
 func (r *repository) GetAllOutbox(ctx context.Context, req *gratitude.GetAllOutboxRequest) (*gratitude.GetAllOutboxResponse, error) {
 	var res gratitude.GetAllOutboxResponse
-	jwt, ok := ctx.Value("token").(*auth.Token)
-	if !ok {
-		return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusUnauthorized, "ctx.Value('token') is not of type *auth.Token"), "repository.Firestore.GetAllOutbox")
-	}
 
-	iter := r.client.Collection("users").Doc(jwt.UID).Collection("outbox").Documents(ctx)
+	iter := r.client.Collection("users").Doc(req.UID).Collection("outbox").Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -181,7 +164,7 @@ func (r *repository) GetAllOutbox(ctx context.Context, req *gratitude.GetAllOutb
 		}
 
 		msg := gratitude.Message{}
-		if err := doc.DataTo(msg); err != nil {
+		if err := doc.DataTo(&msg); err != nil {
 			return nil, errs.Wrap(gratitude.NewGratitudeError(http.StatusInternalServerError, err.Error()), "repository.Firestore.GetAllInbox")
 		}
 		msg.ID = doc.Ref.ID

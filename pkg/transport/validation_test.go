@@ -1,4 +1,4 @@
-package api
+package transport
 
 import (
 	"testing"
@@ -21,30 +21,32 @@ func Test_validateMessage(t *testing.T) {
 			Sender:   "me",
 			SenderID: "",
 		}, wantErr: true, err: "invalid request: message sender ID is empty"},
-		{name: "no recipients", msg: &gratitude.Message{
-			Sender:     "me",
-			SenderID:   "id",
-			Recipients: nil,
+		{name: "no Receivers", msg: &gratitude.Message{
+			Sender:    "me",
+			SenderID:  "id",
+			Receivers: nil,
 		}, wantErr: true, err: "invalid request: message recipient is empty"},
-		{name: "no recipient IDs", msg: &gratitude.Message{
-			Sender:        "me",
-			SenderID:      "id",
-			Recipients:    []string{"you"},
-			RecipientsIDs: nil,
-		}, wantErr: true, err: "invalid request: message recipient ID is empty"},
 		{name: "no text", msg: &gratitude.Message{
-			Sender:        "me",
-			SenderID:      "id",
-			Recipients:    []string{"you"},
-			RecipientsIDs: []string{"id"},
-			Text:          "",
+			Sender:   "me",
+			SenderID: "id",
+			Receivers: []gratitude.User{{
+				UID:      "x",
+				Name:     "you",
+				Email:    "you@you.you",
+				ImageURL: "",
+			}},
+			Text: "",
 		}, wantErr: true, err: "invalid request: message text is empty"},
 		{name: "valid message", msg: &gratitude.Message{
-			Sender:        "me",
-			SenderID:      "id",
-			Recipients:    []string{"you"},
-			RecipientsIDs: []string{"id"},
-			Text:          "heres some text",
+			Sender:   "me",
+			SenderID: "id",
+			Receivers: []gratitude.User{{
+				UID:      "x",
+				Name:     "you",
+				Email:    "you@you.you",
+				ImageURL: "",
+			}},
+			Text: "heres some text",
 		}, wantErr: false},
 	}
 	for _, tc := range tt {
