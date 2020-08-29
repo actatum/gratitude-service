@@ -5,21 +5,18 @@ import (
 	"firebase.google.com/go/auth"
 	"github.com/actatum/gratitude-board-service/pkg/gratitude"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 	"net/http"
 )
 
 // Server interface for handling http requests
 type Server struct {
 	service gratitude.Service
-	logger  *zap.Logger
 }
 
 // NewServer returns a new server object with a gratitude service and zap logger attached to it
-func NewServer(s gratitude.Service, l *zap.Logger) *Server {
+func NewServer(s gratitude.Service) *Server {
 	return &Server{
 		service: s,
-		logger:  l,
 	}
 }
 

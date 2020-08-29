@@ -18,8 +18,8 @@ func routes(s *Server) *echo.Echo {
 	e.GET("/api/health", s.HandleHealth)
 
 	api := e.Group("/api")
+	api.Use(middleware.Logger())
 	api.Use(mid.Authenticator())
-	api.Use(mid.Logger(s.logger))
 	{
 		public := api.Group("/public")
 		{

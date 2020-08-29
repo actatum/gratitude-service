@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"github.com/actatum/gratitude-board-service/pkg/logger"
 	"os"
 
 	"github.com/actatum/gratitude-board-service/pkg/gratitude"
@@ -24,12 +23,7 @@ func Run() error {
 
 	service := gratitude.NewGratitudeService(provider, repo)
 
-	l, err := logger.NewZapLogger()
-	if err != nil {
-		return errs.Wrap(err, "transport.http.Run")
-	}
-
-	server := NewServer(service, l)
+	server := NewServer(service)
 
 	r := routes(server)
 
